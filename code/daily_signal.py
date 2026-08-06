@@ -28,7 +28,7 @@ _session = requests.Session()
 _session.trust_env = False
 requests.get = _session.get
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
 INSTRUMENTS = [
     {"name": "贝瑞基因", "symbol": "sz000710", "file": "sz000710_daily_qfq.csv", "kind": "stock"},
