@@ -225,8 +225,8 @@ def main():
                     help="成交口径：open=次日开盘成交(默认); retrace=回撤成交(跳空超阈值时不追买/不杀跌,等回到昨收价成交,未成交顺延); vwap=次日成交均价; close=信号当日收盘(偏乐观,仅参照)")
     ap.add_argument("--retrace-gap", type=float, default=0.03, help="retrace模式的跳空阈值(默认0.03=3%): 跳空小于阈值按开盘成交,超过阈值才等回撤")
     ap.add_argument("--sector-rsi-max", type=float, default=None, help="板块ETF RSI上限(如70): 板块过热时不进场,None表示不过滤")
-    ap.add_argument("--cost", type=float, default=0.001, help="每笔双边交易成本(默认0.1%估算，可调)")
-    ap.add_argument("--split", default="2017-01-01", help="样本外起始日")
+    ap.add_argument("--cost", type=float, default=0.001, help="单边交易成本(默认0.1%/边，往返0.2%；调仓按成交额每边计费)")
+    ap.add_argument("--split", default="2017-01-01", help="样本外起始日(样本外按连续运行口径：指标全历史预热、起点归一化)")
     ap.add_argument("--out")
     args = ap.parse_args()
 
@@ -302,10 +302,15 @@ def main():
             (r for r in ranked if r["stop"] is None and r["vol_target"] is None and r["adx_floor"] == 0),
             key=lambda r: r["calmar"], reverse=True)[:3]
         def _oos(cand):
+            # 样本外连续运行口径：指标用全历史计算(实盘可获取split前数据)，从split起点归一化，
+            # 避免"冷启动"(窗口内重算指标)在前30-40日无信号造成的收益低估与持仓路径偏差。
             eq, net, pos = run_backtest(
-                oos_df, cand["fast"], cand["slow"], cand["rsi_ceiling"], cand["stop"],
+                df, cand["fast"], cand["slow"], cand["rsi_ceiling"], cand["stop"],
                 cand["vol_target"], cand["adx_floor"], args.cost, sector_flag, args.vol_floor, args.trend, extra_flag, turnover_range, args.close_vwap, args.vol_ratio_min, args.execution, args.retrace_gap, sector_rsi_flag)
-            st = stats(oos_df, eq, net)
+            s, n = eq[~mask], net[~mask]
+            base = float(s.iloc[0])
+            norm_eq = s / base - 1 if base > 0 else s
+            st = stats(oos_df, norm_eq, n)
             if st:
                 return {**st, "fast": cand["fast"], "slow": cand["slow"],
                         "rsi_ceiling": cand["rsi_ceiling"], "stop": cand["stop"],

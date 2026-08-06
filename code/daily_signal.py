@@ -95,6 +95,7 @@ def norm(df):
 
 def update_instrument(instr):
     path = os.path.join(DATA_DIR, instr["file"])
+    full_start = "19900101"
     if os.path.exists(path):
         old = pd.read_csv(path, parse_dates=["date"])
         start = (old["date"].max() - timedelta(days=15)).strftime("%Y%m%d")
@@ -111,6 +112,21 @@ def update_instrument(instr):
         log(f"[warn] {instr['name']} 本次未更新，沿用旧数据")
         return old is not None
     df = norm(df)
+    if old is not None:
+        # 前复权锚点一致性检查：重叠区间收盘价偏差>1%说明期间发生除权除息或源口径变化，
+        # 增量拼接会污染历史价格，需全量重下校准（锚点变化会整体平移历史价）。
+        ov = df.merge(old[["date", "close"]], on="date", suffixes=("_new", "_old"))
+        drift = float((ov["close_new"] / ov["close_old"] - 1).abs().max()) if len(ov) else 0.0
+        if drift > 0.01:
+            log(f"[warn] {instr['name']} 前复权重叠价偏差{drift:.2%}，触发全量重下")
+            full = _try(lambda: fetch_em(instr, full_start, end), f"{instr['name']} 东财全量")
+            src = "东财"
+            if full is None:
+                full = _try(lambda: fetch_sina(instr, full_start, end), f"{instr['name']} 新浪全量")
+                src = "新浪"
+            if full is not None:
+                df = norm(full)
+                old = None
     if old is not None:
         merged = pd.concat([old, df], ignore_index=True)
         merged = merged.sort_values("date").drop_duplicates("date", keep="last")
@@ -155,6 +171,13 @@ def compute_signal():
     sh = load(os.path.join(DATA_DIR, "sh000001_daily.csv"))
 
     close = stock["close"]
+    # 全部门控按个股交易日对齐：某标的缺最新日时取值为NaN，比较结果为False=门控关闭(保守)
+    stock_dates = stock["date"]
+    med_a_close = med_a.set_index("date")["close"].reindex(stock_dates)
+    med_b_close = med_b.set_index("date")["close"].reindex(stock_dates)
+    cyb_close = cyb.set_index("date")["close"].reindex(stock_dates)
+    sh_close = sh.set_index("date")["close"].reindex(stock_dates)
+
     ma3 = close.rolling(3).mean(); ma20 = close.rolling(20).mean()
     rsi = rsi14(close)
     pdi, mdi = dmi(stock)
@@ -163,11 +186,8 @@ def compute_signal():
     vr = stock["volume"] / stock["volume"].rolling(20).mean()
     rv20 = close.pct_change().rolling(20).std(ddof=0) * (252 ** 0.5)
 
-    ma_a20 = med_a["close"].rolling(20).mean()
-    rsi_a = rsi14(med_a["close"])
-    ma_b20 = med_b["close"].rolling(20).mean()
-    ma_cyb30 = cyb["close"].rolling(30).mean()
-    ma_sh20 = sh["close"].rolling(20).mean()
+    ma_a20 = med_a_close.rolling(20).mean()
+    ma_cyb30 = cyb_close.rolling(30).mean()
 
     last = len(stock) - 1
     gates = {
@@ -175,8 +195,8 @@ def compute_signal():
         "个股_MA3>MA20": bool(ma3.iloc[last] > ma20.iloc[last]),
         "个股_RSI<80": bool(rsi.iloc[last] < 80),
         "个股_+DI>-DI": bool(pdi.iloc[last] > mdi.iloc[last]),
-        "医药ETF>MA20": bool(med_a["close"].iloc[-1] > ma_a20.iloc[-1]),
-        "创业板>MA30": bool(cyb["close"].iloc[-1] > ma_cyb30.iloc[-1]),
+        "医药ETF>MA20": bool(med_a_close.iloc[last] > ma_a20.iloc[last]),
+        "创业板>MA30": bool(cyb_close.iloc[last] > ma_cyb30.iloc[last]),
         "换手率0.8%-10%": bool(0.008 <= to.iloc[last] <= 0.10),
     }
     sig_today = all(gates.values())
@@ -187,8 +207,8 @@ def compute_signal():
     sig_y = (bool(close.iloc[last - 1] > ma3.iloc[last - 1]) and
              bool(ma3.iloc[last - 1] > ma20.iloc[last - 1]) and
              bool(rsi.iloc[last - 1] < 80) and bool(pdi.iloc[last - 1] > mdi.iloc[last - 1]) and
-             bool(med_a["close"].iloc[-2] > ma_a20.iloc[-2]) and
-             bool(cyb["close"].iloc[-2] > ma_cyb30.iloc[-2]) and
+             bool(med_a_close.iloc[last - 1] > ma_a20.iloc[last - 1]) and
+             bool(cyb_close.iloc[last - 1] > ma_cyb30.iloc[last - 1]) and
              bool(0.008 <= to.iloc[last - 1] <= 0.10))
     scale_y = min(0.4 / rv20.iloc[last - 1], 1.0) if np.isfinite(rv20.iloc[last - 1]) else 0.0
     pos_today = sig_y * scale_y
@@ -220,14 +240,14 @@ def compute_signal():
         },
         "sector": {
             "医药ETF_close": float(med_a["close"].iloc[-1]),
-            "医药ETF_MA20": round(float(ma_a20.iloc[-1]), 3),
-            "医药ETF_RSI": round(float(rsi_a.iloc[-1]), 1),
+            "医药ETF_MA20": round(float(med_a["close"].rolling(20).mean().iloc[-1]), 3),
+            "医药ETF_RSI": round(float(rsi14(med_a["close"]).iloc[-1]), 1),
             "医疗ETF_close": float(med_b["close"].iloc[-1]),
-            "医疗ETF_MA20": round(float(ma_b20.iloc[-1]), 3),
+            "医疗ETF_MA20": round(float(med_b["close"].rolling(20).mean().iloc[-1]), 3),
             "创业板close": float(cyb["close"].iloc[-1]),
-            "创业板MA30": round(float(ma_cyb30.iloc[-1]), 3),
+            "创业板MA30": round(float(cyb["close"].rolling(30).mean().iloc[-1]), 3),
             "上证close": float(sh["close"].iloc[-1]),
-            "上证MA20": round(float(ma_sh20.iloc[-1]), 3),
+            "上证MA20": round(float(sh["close"].rolling(20).mean().iloc[-1]), 3),
         },
         "data_latest": {
             "贝瑞基因": str(stock["date"].iloc[last].date()),
@@ -236,7 +256,13 @@ def compute_signal():
             "创业板": str(cyb["date"].iloc[-1].date()),
             "上证": str(sh["date"].iloc[-1].date()),
         },
-        "note": "创业板/ETF等数据源缺最新日时门控按关闭处理(保守)；仓位为百分比目标，实盘按次日开盘成交、大跳空≥3%等回撤。历史表现不代表未来。",
+        "data_stale": {
+            "医药ETF": med_a["date"].iloc[-1].date() < stock["date"].iloc[last].date(),
+            "医疗ETF": med_b["date"].iloc[-1].date() < stock["date"].iloc[last].date(),
+            "创业板": cyb["date"].iloc[-1].date() < stock["date"].iloc[last].date(),
+            "上证": sh["date"].iloc[-1].date() < stock["date"].iloc[last].date(),
+        },
+        "note": "门控全部按个股交易日对齐，数据源缺最新日时该门控强制关闭(保守)；仓位为百分比目标，实盘按次日开盘成交、大跳空≥3%等回撤。历史表现不代表未来。",
     }
     return out
 

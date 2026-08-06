@@ -102,7 +102,8 @@ def main():
             "ma5_volume": round(float(vol_5avg), 0) if not pd.isna(vol_5avg) else None,
             "ma20_volume": round(float(vol_20avg), 0) if not pd.isna(vol_20avg) else None,
             "volume_trend_up": bool(vol_5avg > vol_20avg) if not pd.isna(vol_20avg) else None,
-            "obv_above_20d": bool(obv.iloc[-1] > obv.rolling(20).mean().iloc[-1]),
+            "obv_above_20d": (bool(obv.iloc[-1] > (m20 := obv.rolling(20).mean().iloc[-1]))
+                              if pd.notna(m20 := obv.rolling(20).mean().iloc[-1]) else None),
         },
         "ytd_pct": round(float(ytd) * 100, 2),
         "trend_text": trend,
