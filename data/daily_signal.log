@@ -1,0 +1,13 @@
+[2026-08-06 17:36:50] [warn] 贝瑞基因 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-08-06 17:36:51] [ok] 贝瑞基因 更新自新浪源，共6703行，最新 2026-08-06
+[2026-08-06 17:37:12] [warn] 上证指数 东财 连续3次失败: HTTPSConnectionPool(host='80.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b%3AMK0010%2Cm%3A1%2Bt%3A1%2Cm%3A0+t%3A5%2Cm%3A1%2Bs%3A3%2Cm%3A0%2Bt%3A5%2Cm%3A2&fields=f3%2Cf12%2Cf13 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+[2026-08-06 17:37:12] [ok] 上证指数 更新自新浪源，共8698行，最新 2026-08-06
+[2026-08-06 17:37:35] [warn] 深证成指 东财 连续3次失败: HTTPSConnectionPool(host='80.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b%3AMK0010%2Cm%3A1%2Bt%3A1%2Cm%3A0+t%3A5%2Cm%3A1%2Bs%3A3%2Cm%3A0%2Bt%3A5%2Cm%3A2&fields=f3%2Cf12%2Cf13 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+[2026-08-06 17:37:35] [ok] 深证成指 更新自新浪源，共8605行，最新 2026-08-05
+[2026-08-06 17:37:59] [warn] 创业板指 东财 连续3次失败: HTTPSConnectionPool(host='80.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b%3AMK0010%2Cm%3A1%2Bt%3A1%2Cm%3A0+t%3A5%2Cm%3A1%2Bs%3A3%2Cm%3A0%2Bt%3A5%2Cm%3A2&fields=f3%2Cf12%2Cf13 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+[2026-08-06 17:37:59] [ok] 创业板指 更新自新浪源，共3929行，最新 2026-08-05
+[2026-08-06 17:38:05] [warn] 医药ETF 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-08-06 17:38:06] [ok] 医药ETF 更新自新浪源，共2815行，最新 2026-08-06
+[2026-08-06 17:38:12] [warn] 医疗ETF 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-08-06 17:38:12] [ok] 医疗ETF 更新自新浪源，共1732行，最新 2026-08-05
+[2026-08-06 17:38:12] 数据更新完成: 6/6 成功
