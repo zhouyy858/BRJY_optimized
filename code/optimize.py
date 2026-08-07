@@ -309,7 +309,9 @@ def main():
                 cand["vol_target"], cand["adx_floor"], args.cost, sector_flag, args.vol_floor, args.trend, extra_flag, turnover_range, args.close_vwap, args.vol_ratio_min, args.execution, args.retrace_gap, sector_rsi_flag)
             s, n = eq[~mask], net[~mask]
             base = float(s.iloc[0])
-            norm_eq = s / base - 1 if base > 0 else s
+            # 归一化必须用净值+1后的增长率比值：(1+s)/(1+base)-1；
+            # 直接用裸净值 s/base-1 在窗口起点净值非0时会把收益夸大(如2017起点-54%时+1677%虚高，正确+529%)
+            norm_eq = (1 + s) / (1 + base) - 1 if base > -1 else s
             st = stats(oos_df, norm_eq, n)
             if st:
                 return {**st, "fast": cand["fast"], "slow": cand["slow"],
