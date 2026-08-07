@@ -73,6 +73,14 @@ def fetch_em(instr, start, end):
     code = instr["symbol"][-6:]
     if instr["kind"] == "index":
         return ak.index_zh_a_hist(symbol=code, period="daily", start_date=start, end_date=end)
+    if instr["kind"] == "etf":
+        # ETF 必须走东财前复权接口；stock_zh_a_hist 对 ETF 兼容性差，作为兜底
+        try:
+            return ak.fund_etf_hist_em(symbol=code, period="daily", start_date=start,
+                                       end_date=end, adjust="qfq")
+        except Exception:
+            return ak.stock_zh_a_hist(symbol=code, period="daily", start_date=start,
+                                      end_date=end, adjust="qfq")
     return ak.stock_zh_a_hist(symbol=code, period="daily", start_date=start, end_date=end, adjust="qfq")
 
 
@@ -81,7 +89,10 @@ def fetch_sina(instr, start, end):
     if instr["kind"] == "index":
         return ak.stock_zh_index_daily(symbol=sym)
     if instr["kind"] == "etf":
-        return ak.fund_etf_hist_sina(symbol=sym)
+        # 新浪 fund_etf_hist_sina 返回不复权价，与东财前复权口径不兼容；
+        # 静默换源会重写ETF历史、翻转板块门控并改变回测结果，故拒绝回退(沿用旧qfq数据)
+        log(f"[warn] {instr['name']} 新浪ETF数据为不复权口径，拒绝换源回退(仅用东财qfq)")
+        return None
     return ak.stock_zh_a_daily(symbol=sym, start_date=start, end_date=end, adjust="qfq")
 
 

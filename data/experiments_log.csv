@@ -14,3 +14,4 @@ date,id,type,description,n_trials,window,result,decision,source
 2026-08-07,DSR-001,statistical,DSR多重试验校正(594点网格, open与retrace双口径),594,2013+/2017+/2021+,DSR=0.94/0.62/0.51(均<0.95不显著),披露为乐观上界,git 73de383
 2026-08-07,WFA-001,validation,滚动walk-forward 10折×(594点/折) IS按Calmar选参次年样本外,5940,2016-2026,聚合+50.7%/Calmar0.30 vs 固定D3V同窗口+523.3%/Calmar1.46,固定参数优于滚动重训,本次提交
 2026-08-07,CONS-001,execution,一字板阻断(--limit-block)与默认retrace对比,2,2017+,两口径完全一致+529.5%/-14.3%(retrace3%已覆盖一字板),保留为显式强制选项,本次提交
+2026-08-07,DATA-001,data,ETF新浪不复权静默换源事件：东财被代理拦截→新浪全量重下→板块门控738天翻转→回测2017+ 529.5%→744.9%,0,全部,已回滚ETF为东财qfq；daily_signal禁止ETF新浪回退，固定fund_etf_hist_em(qfq),已修复,本次提交
