@@ -99,7 +99,7 @@
 
 ### 盘中实时决策试点（2026-08-07，详见 [docs/methodology.md](docs/methodology.md) §6）
 
-用 baostock 5 分钟线在 T 日 14:30/14:45 实时计算 D3V 信号并当场买卖（板块门控用 T-1 值）。窗口 2020+ 结果：收益不如次日 retrace（+332% vs +430%），但回撤从 -14.3% 降至 -10.2%、Calmar 2.53 略高——属于"用收益换回撤"的权衡，**未切换为正式执行口径**。另测了无时钟的**规则触发**模式（信号变即成交/T+1 约束）：+210.8%/-23.3%，全面劣于固定时点——盘中早期信号噪音大，T+1 使假信号隔夜扛单；纯规则确认（连续 24 bar）也仅 +239%/Calmar 1.38，仍不采用。
+用 baostock 5 分钟线在 T 日 14:30/14:45 实时计算 D3V 信号并当场买卖（板块门控用 T-1 值）。窗口 2020+ 结果：收益不如次日 retrace（+332% vs +430%），但回撤从 -14.3% 降至 -10.2%、Calmar 2.53 略高——属于"用收益换回撤"的权衡，**未切换为正式执行口径**。另测了无时钟的**规则触发**模式（信号变即成交/T+1 约束）：+210.8%/-23.3%，全面劣于固定时点——盘中早期信号噪音大，T+1 使假信号隔夜扛单；纯规则确认（连续 24 bar）也仅 +239%/Calmar 1.38，仍不采用。**纯价格触发规则**（突破昨高/开盘30分钟区间/VWAP/MA5/昨收±2%等，触发即买卖、不看收盘价，12 组全测）最优也仅 pct2+门控 +249.8%/-25.5%/Calmar 0.86，且不带 D3V 门控的均线类规则接近亏光（-97.5%）——价格触发只提供时机、方向仍靠 D3V 门控，**全部劣于日线 retrace 基线**，维持日线口径。
 
 ## 快速开始
 
@@ -134,6 +134,7 @@ python3 code/walk_forward.py data/sz000710_daily_qfq.csv \
 python3 code/intraday_backtest.py --decision 1430      # 固定时点 14:30（或 1445）
 python3 code/intraday_backtest.py --trigger rule        # 规则触发（无时钟，默认即时）
 python3 code/intraday_backtest.py --trigger rule --confirm 24   # 规则+连续24根bar确认
+python3 code/intraday_backtest.py --trigger price --price-rule pct2  # 纯价格触发(6规则×门控开关, 试点)
 ```
 
 ## 数据说明
