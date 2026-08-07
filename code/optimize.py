@@ -48,7 +48,7 @@ def adx14(df):
     return dmi14(df)[2]
 
 
-def run_backtest(df, fast, slow, rsi_ceiling, stop_mult, vol_target, adx_floor, cost, sector_flag=None, vol_floor=0.0, trend_dir="adx", extra_flag=None, turnover_range=None, close_vwap=False, vol_ratio_min=None, execution="open", retrace_gap=0.03, sector_rsi_flag=None):
+def run_backtest(df, fast, slow, rsi_ceiling, stop_mult, vol_target, adx_floor, cost, sector_flag=None, vol_floor=0.0, trend_dir="adx", extra_flag=None, turnover_range=None, close_vwap=False, vol_ratio_min=None, execution="open", retrace_gap=0.03, sector_rsi_flag=None, limit_block=False):
     close = df["close"]
     ret = close.pct_change()
     ma_fast = close.rolling(fast).mean()
@@ -110,6 +110,7 @@ def run_backtest(df, fast, slow, rsi_ceiling, stop_mult, vol_target, adx_floor, 
     turnover = pos.diff().abs().fillna(0)
     if execution == "retrace":
         # 回撤成交：目标仓位t-1收盘决定；高开不追买/低开不杀跌，等价格回到昨收价再成交，未成交顺延
+        # limit_block=True：一字涨停/跌停日(开盘即封板且全天未开板)视为无法成交，顺延到下一天（仅retrace支持，open/vwap无顺延逻辑）
         target = pos.to_numpy()
         closes = df["close"].to_numpy(); opens = df["open"].to_numpy()
         highs = df["high"].to_numpy(); lows = df["low"].to_numpy()
@@ -119,10 +120,22 @@ def run_backtest(df, fast, slow, rsi_ceiling, stop_mult, vol_target, adx_floor, 
             if not np.isfinite(pc) or pc <= 0:
                 actual[t] = actual[t - 1]
                 continue
-            gap_buy = pc * (1.0 + retrace_gap)
-            gap_sell = pc * (1.0 - retrace_gap)
             prev_p = actual[t - 1]; goal = target[t]
             delta = goal - prev_p
+            if limit_block:
+                # 一字板：全天OHLC同价且封在涨/跌停价（主板上限±10%，ST为±5%未单独识别）
+                # 方向约束：一字涨停只拦买入(卖出可成交)，一字跌停只拦卖出(买入可成交)
+                one_word = opens[t] == highs[t] == lows[t] == closes[t]
+                if one_word and closes[t] >= round(pc * 1.1, 2) - 1e-9 and delta > 1e-12:
+                    actual[t] = actual[t - 1]
+                    day_ret[t] = actual[t - 1] * (closes[t] / pc - 1)
+                    continue
+                if one_word and closes[t] <= round(pc * 0.9, 2) + 1e-9 and delta < -1e-12:
+                    actual[t] = actual[t - 1]
+                    day_ret[t] = actual[t - 1] * (closes[t] / pc - 1)
+                    continue
+            gap_buy = pc * (1.0 + retrace_gap)
+            gap_sell = pc * (1.0 - retrace_gap)
             if delta > 1e-12:
                 if opens[t] <= gap_buy:
                     fill = opens[t]  # 跳空未超阈值，开盘照常成交
@@ -159,6 +172,8 @@ def run_backtest(df, fast, slow, rsi_ceiling, stop_mult, vol_target, adx_floor, 
         return (1 + net).cumprod() - 1, net, pos
 
     if execution in ("open", "vwap"):
+        if limit_block:
+            raise ValueError("limit_block 仅支持 retrace 成交口径（open/vwap 无未成交顺延逻辑，启用会得到错误结果）")
         # 严格次日成交：信号t-1收盘决定，t日开盘(vwap时按当日成交均价)执行；加减仓切片分别计价
         prev = pos.shift(1).fillna(0)
         delta = pos - prev
@@ -226,6 +241,7 @@ def main():
     ap.add_argument("--retrace-gap", type=float, default=0.03, help="retrace模式的跳空阈值(默认0.03=3%): 跳空小于阈值按开盘成交,超过阈值才等回撤")
     ap.add_argument("--sector-rsi-max", type=float, default=None, help="板块ETF RSI上限(如70): 板块过热时不进场,None表示不过滤")
     ap.add_argument("--cost", type=float, default=0.001, help="单边交易成本(默认0.1%/边，往返0.2%；调仓按成交额每边计费)")
+    ap.add_argument("--limit-block", action="store_true", help="一字涨停/跌停日不可成交并顺延（仅retrace口径支持）")
     ap.add_argument("--split", default="2017-01-01", help="样本外起始日(样本外按连续运行口径：指标全历史预热、起点归一化)")
     ap.add_argument("--out")
     args = ap.parse_args()
@@ -267,7 +283,7 @@ def main():
               in itertools.product(fasts, slows, stops, ceilings, vol_targets, adx_floors) if f < s]
     results = []
     for f, s, c, m, v, a in combos:
-        eq, net, pos = run_backtest(df, f, s, c, m, v, a, args.cost, sector_flag, args.vol_floor, args.trend, extra_flag, turnover_range, args.close_vwap, args.vol_ratio_min, args.execution, args.retrace_gap, sector_rsi_flag)
+        eq, net, pos = run_backtest(df, f, s, c, m, v, a, args.cost, sector_flag, args.vol_floor, args.trend, extra_flag, turnover_range, args.close_vwap, args.vol_ratio_min, args.execution, args.retrace_gap, sector_rsi_flag, args.limit_block)
         st = stats(df, eq, net)
         if st is None:
             continue
@@ -292,7 +308,7 @@ def main():
         oos_df = df[~mask].reset_index(drop=True)
         ranked = []
         for f, s, c, m, v, a in combos:
-            eq, net, pos = run_backtest(is_df, f, s, c, m, v, a, args.cost, sector_flag, args.vol_floor, args.trend, extra_flag, turnover_range, args.close_vwap, args.vol_ratio_min, args.execution, args.retrace_gap, sector_rsi_flag)
+            eq, net, pos = run_backtest(is_df, f, s, c, m, v, a, args.cost, sector_flag, args.vol_floor, args.trend, extra_flag, turnover_range, args.close_vwap, args.vol_ratio_min, args.execution, args.retrace_gap, sector_rsi_flag, args.limit_block)
             st = stats(is_df, eq, net)
             if st:
                 ranked.append({**st, "fast": f, "slow": s, "rsi_ceiling": c, "stop": m,
@@ -306,7 +322,7 @@ def main():
             # 避免"冷启动"(窗口内重算指标)在前30-40日无信号造成的收益低估与持仓路径偏差。
             eq, net, pos = run_backtest(
                 df, cand["fast"], cand["slow"], cand["rsi_ceiling"], cand["stop"],
-                cand["vol_target"], cand["adx_floor"], args.cost, sector_flag, args.vol_floor, args.trend, extra_flag, turnover_range, args.close_vwap, args.vol_ratio_min, args.execution, args.retrace_gap, sector_rsi_flag)
+                cand["vol_target"], cand["adx_floor"], args.cost, sector_flag, args.vol_floor, args.trend, extra_flag, turnover_range, args.close_vwap, args.vol_ratio_min, args.execution, args.retrace_gap, sector_rsi_flag, args.limit_block)
             s, n = eq[~mask], net[~mask]
             base = float(s.iloc[0])
             # 归一化必须用净值+1后的增长率比值：(1+s)/(1+base)-1；

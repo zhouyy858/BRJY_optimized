@@ -1,0 +1,16 @@
+date,id,type,description,n_trials,window,result,decision,source
+2026-08-06,D2V-001,retrain,D2V初版(MA+门控)，旧口径数字不可复现,未登记,2013+,旧口径+764.7%/-13.3%(废弃),废弃并重训,git ad27b2a
+2026-08-06,D3V-001,retrain,D3V宽网格样本内2015-2018选参+2019后样本外(open初筛/retrace复核),未登记,2015-2018 IS,定稿MA3/20+RSI80+DI+医药MA20+创业板MA30+换手0.8-10%+vol0.4+retrace3%,定稿,git d76a8ff
+2026-08-06,MC-001,structural,去创业板门控,1,2017+,修正口径后与加门控一致(旧口径+1642%/-31.4%作废),保留门控,optimized_params.json
+2026-08-06,MC-002,structural,创业板MA20替代MA30,1,2017+,明显劣于MA30,未采用,optimized_params.json
+2026-08-06,MC-003,structural,加医药ETF RSI<70,1,2017+,收益损失大/回撤改善有限,未采用,optimized_params.json
+2026-08-06,MC-004,structural,换手下沿1%替代0.8%,1,2017+,略劣,未采用,optimized_params.json
+2026-08-06,MC-005,structural,板块MA30替代MA20,1,2017+,明显劣,未采用,optimized_params.json
+2026-08-06,MC-006,structural,慢线MA30替代MA20,1,2017+,明显劣,未采用,optimized_params.json
+2026-08-06,MC-007,structural,上证指数门控,1,2017+,全面劣,未采用,optimized_params.json
+2026-08-06,MC-008,structural,深成指门控,1,2017+,全面劣,未采用,optimized_params.json
+2026-08-06,AUD-001,process,daily_signal门控按个股日期对齐+前复权锚点漂移+bool(NaN)防护,0,全部,审计修复,已合入,git 31739ad
+2026-08-07,AUD-002,process,样本外窗口归一化bug修复(裸净值相除→净值增长率),0,2017+/2021+,+1677%→+529.5%、+449%→+269.1%,已合入,git 73de383
+2026-08-07,DSR-001,statistical,DSR多重试验校正(594点网格, open与retrace双口径),594,2013+/2017+/2021+,DSR=0.94/0.62/0.51(均<0.95不显著),披露为乐观上界,git 73de383
+2026-08-07,WFA-001,validation,滚动walk-forward 10折×(594点/折) IS按Calmar选参次年样本外,5940,2016-2026,聚合+50.7%/Calmar0.30 vs 固定D3V同窗口+523.3%/Calmar1.46,固定参数优于滚动重训,本次提交
+2026-08-07,CONS-001,execution,一字板阻断(--limit-block)与默认retrace对比,2,2017+,两口径完全一致+529.5%/-14.3%(retrace3%已覆盖一字板),保留为显式强制选项,本次提交

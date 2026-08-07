@@ -14,7 +14,8 @@
 │   ├── analyze.py                # 技术指标分析：MA/RSI/MACD/ATR/量能/VWAP 等
 │   ├── backtest.py               # 单策略回测（信号当日收盘计算、次日生效）
 │   ├── optimize.py               # 参数网格优化 + 样本外/扰动/压力校验
-│   └── deflated_sharpe.py        # DSR/PSR/MinTRL 统计检验（多重试验校正）
+│   ├── deflated_sharpe.py        # DSR/PSR/MinTRL 统计检验（多重试验校正）
+│   └── walk_forward.py           # 滚动walk-forward(逐年重训+样本外+聚合DSR)
 ├── docs/
 │   └── methodology.md            # 方法论评审与统计检验报告（含归一化口径修正说明）
 ├── data/                         # 历史数据与信号输出（脚本自动维护）
@@ -26,6 +27,7 @@
 │   ├── sh000001_daily.csv        # 上证指数
 │   ├── last_signal.json          # 最新信号（含各门控明细）
 │   ├── signal_log.csv            # 历史信号流水
+│   ├── experiments_log.csv       # 试验登记簿（每次网格/变体/审计一行）
 │   ├── optimized_params.json     # 当前策略参数
 │   └── daily_signal.log          # 运行日志
 ├── .github/workflows/daily.yml   # GitHub Actions：工作日 17:30（北京时间）自动执行
@@ -88,6 +90,12 @@
 >
 > 参数经 2015–2018 样本内选择、2019 后样本外验证并做邻域扰动检查；回测未考虑涨跌停无法成交、停牌、T+1、滑点等现实约束；历史表现不代表未来。
 
+### 方法论改进试行结果（2026-08-07，详见 [docs/methodology.md](docs/methodology.md)）
+
+- **滚动 walk-forward 已试，不采用**：10 折×594 点逐年重训，聚合 +50.7%/Calmar 0.30，远劣于固定 D3V 同窗口 +523.3%/Calmar 1.46（IS 按 Calmar 选参偏向保守低仓，OOS 几乎不交易）→ 维持参数先验固定；
+- **成交约束已补**：`--limit-block` 强制一字板不可成交（一字涨停只拦买入、一字跌停只拦卖出），验证与 retrace3% 默认结果完全一致（+529.5%/-14.3%）；停牌日数据源直接省略、T+1 无同日往返天然满足；
+- **试验登记簿已建**：`data/experiments_log.csv` 记录全部历史尝试与新试验，DSR 的 n_trials 可追溯。
+
 ## 快速开始
 
 ```bash
@@ -111,7 +119,11 @@ python3 code/optimize.py data/sz000710_daily_qfq.csv \
   --adx 0 --sector-csv data/sh512010_daily.csv --sector-ma 20 \
   --extra-csv data/sz399006_daily.csv --extra-ma 30 --trend di \
   --turnover-range 0.008,0.10 --execution retrace --retrace-gap 0.03 \
-  --cost 0.001 --split 2017-01-01
+  --cost 0.001 --split 2017-01-01        # 追加 --limit-block 启用一字板阻断
+
+# 滚动 walk-forward（10折×594点，含聚合DSR）
+python3 code/walk_forward.py data/sz000710_daily_qfq.csv \
+  --sector-csv data/sh512010_daily.csv --extra-csv data/sz399006_daily.csv
 ```
 
 ## 数据说明
