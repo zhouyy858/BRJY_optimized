@@ -15,7 +15,8 @@
 │   ├── backtest.py               # 单策略回测（信号当日收盘计算、次日生效）
 │   ├── optimize.py               # 参数网格优化 + 样本外/扰动/压力校验
 │   ├── deflated_sharpe.py        # DSR/PSR/MinTRL 统计检验（多重试验校正）
-│   └── walk_forward.py           # 滚动walk-forward(逐年重训+样本外+聚合DSR)
+│   ├── walk_forward.py           # 滚动walk-forward(逐年重训+样本外+聚合DSR)
+│   └── intraday_backtest.py      # 盘中14:30/14:45实时决策试点(baostock 5分钟线)
 ├── docs/
 │   └── methodology.md            # 方法论评审与统计检验报告（含归一化口径修正说明）
 ├── data/                         # 历史数据与信号输出（脚本自动维护）
@@ -96,6 +97,10 @@
 - **成交约束已补**：`--limit-block` 强制一字板不可成交（一字涨停只拦买入、一字跌停只拦卖出），验证与 retrace3% 默认结果完全一致（+529.5%/-14.3%）；停牌日数据源直接省略、T+1 无同日往返天然满足；
 - **试验登记簿已建**：`data/experiments_log.csv` 记录全部历史尝试与新试验，DSR 的 n_trials 可追溯。
 
+### 盘中实时决策试点（2026-08-07，详见 [docs/methodology.md](docs/methodology.md) §6）
+
+用 baostock 5 分钟线在 T 日 14:30/14:45 实时计算 D3V 信号并当场买卖（板块门控用 T-1 值）。窗口 2020+ 结果：收益不如次日 retrace（+332% vs +430%），但回撤从 -14.3% 降至 -10.2%、Calmar 2.53 略高——属于"用收益换回撤"的权衡，**未切换为正式执行口径**。若考虑实盘采用，需先做样本外参数验证。
+
 ## 快速开始
 
 ```bash
@@ -124,6 +129,9 @@ python3 code/optimize.py data/sz000710_daily_qfq.csv \
 # 滚动 walk-forward（10折×594点，含聚合DSR）
 python3 code/walk_forward.py data/sz000710_daily_qfq.csv \
   --sector-csv data/sh512010_daily.csv --extra-csv data/sz399006_daily.csv
+
+# 盘中实时决策试点（需 baostock；分钟线自2020-01-02起）
+python3 code/intraday_backtest.py --decision 1430   # 或 1445
 ```
 
 ## 数据说明

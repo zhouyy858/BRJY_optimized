@@ -15,3 +15,6 @@ date,id,type,description,n_trials,window,result,decision,source
 2026-08-07,WFA-001,validation,滚动walk-forward 10折×(594点/折) IS按Calmar选参次年样本外,5940,2016-2026,聚合+50.7%/Calmar0.30 vs 固定D3V同窗口+523.3%/Calmar1.46,固定参数优于滚动重训,本次提交
 2026-08-07,CONS-001,execution,一字板阻断(--limit-block)与默认retrace对比,2,2017+,两口径完全一致+529.5%/-14.3%(retrace3%已覆盖一字板),保留为显式强制选项,本次提交
 2026-08-07,DATA-001,data,ETF新浪不复权静默换源事件：东财被代理拦截→新浪全量重下→板块门控738天翻转→回测2017+ 529.5%→744.9%,0,全部,已回滚ETF为东财qfq；daily_signal禁止ETF新浪回退，固定fund_etf_hist_em(qfq),已修复,本次提交
+2026-08-07,INTRADAY-001,execution,盘中14:45实时决策试点(baostock 5分钟qfq, 个股指标盘中实时+门控T-1),1,2020+,+291.5%/-11.0%/Calmar2.18/63笔 vs retrace基线+410.6%/-14.3%/2.06/45笔,收益降回撤降,试点记录
+2026-08-07,INTRADAY-002,execution,盘中14:30实时决策试点,1,2020+,+332.3%/-10.2%/Calmar2.53/63笔 vs 基线+410.6%/-14.3%/2.06,收益降回撤降Calmar略升,试点记录
+2026-08-07,INTRADAY-003,execution,盘中14:30参数网格探索(90点,样本内),90,2020+,现有D3V参数(3/20/RSI80/vol0.4)收益仍最高+332.3%；vol0.25换Calmar2.67但收益+175.7%,维持原参数,样本内探索需样本外验证
