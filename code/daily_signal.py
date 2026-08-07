@@ -37,10 +37,18 @@ INSTRUMENTS = [
     {"name": "创业板指", "symbol": "sz399006", "file": "sz399006_daily.csv", "kind": "index"},
     {"name": "医药ETF", "symbol": "sh512010", "file": "sh512010_daily.csv", "kind": "etf"},
     {"name": "医疗ETF", "symbol": "sh512170", "file": "sh512170_daily.csv", "kind": "etf"},
+    {"name": "基因测序板块", "symbol": "基因测序", "file": "ths_gene_sequencing_daily.csv", "kind": "board"},
 ]
 
+# 第二门控选择：与贝瑞基因日收益相关性最强的是基因测序板块(0.62/2024+0.68)，
+# 但回测(SECTOR-001)显示基因测序门控(+375.4%/-16.7%)劣于创业板门控(+529.5%/-14.3%)：
+# 板块指数含个股自身(自指), 高相关性=冗余信息；创业板指是正交的大盘成长风格过滤器。
+# 默认保留回测最优的创业板；如用户决定切换，改这里为 "gene" 即可。
+SECOND_GATE = "cyb"
+
 RENAME = {"日期": "date", "开盘": "open", "收盘": "close", "最高": "high",
-          "最低": "low", "成交量": "volume", "成交额": "amount", "换手率": "turnover"}
+          "最低": "low", "成交量": "volume", "成交额": "amount", "换手率": "turnover",
+          "开盘价": "open", "最高价": "high", "最低价": "low", "收盘价": "close"}
 KEEP = ["date", "open", "high", "low", "close", "volume", "amount", "turnover", "outstanding_share"]
 
 
@@ -71,6 +79,9 @@ def _try(fn, label, retries=3, backoff=2.0):
 
 def fetch_em(instr, start, end):
     code = instr["symbol"][-6:]
+    if instr["kind"] == "board":
+        # 同花顺板块指数(历史可回溯至2015)；东财push2接口对macOS代理不稳，THS为稳定主源
+        return ak.stock_board_concept_index_ths(symbol=instr["symbol"], start_date=start, end_date=end)
     if instr["kind"] == "index":
         return ak.index_zh_a_hist(symbol=code, period="daily", start_date=start, end_date=end)
     if instr["kind"] == "etf":
@@ -86,6 +97,9 @@ def fetch_em(instr, start, end):
 
 def fetch_sina(instr, start, end):
     sym = instr["symbol"]
+    if instr["kind"] == "board":
+        log(f"[warn] {instr['name']} 无新浪回退源，沿用旧数据")
+        return None
     if instr["kind"] == "index":
         return ak.stock_zh_index_daily(symbol=sym)
     if instr["kind"] == "etf":
@@ -179,6 +193,7 @@ def compute_signal():
     med_a = load(os.path.join(DATA_DIR, "sh512010_daily.csv"))
     med_b = load(os.path.join(DATA_DIR, "sh512170_daily.csv"))
     cyb = load(os.path.join(DATA_DIR, "sz399006_daily.csv"))
+    gene = load(os.path.join(DATA_DIR, "ths_gene_sequencing_daily.csv"))
     sh = load(os.path.join(DATA_DIR, "sh000001_daily.csv"))
 
     close = stock["close"]
@@ -187,6 +202,7 @@ def compute_signal():
     med_a_close = med_a.set_index("date")["close"].reindex(stock_dates)
     med_b_close = med_b.set_index("date")["close"].reindex(stock_dates)
     cyb_close = cyb.set_index("date")["close"].reindex(stock_dates)
+    gene_close = gene.set_index("date")["close"].reindex(stock_dates)
     sh_close = sh.set_index("date")["close"].reindex(stock_dates)
 
     ma3 = close.rolling(3).mean(); ma20 = close.rolling(20).mean()
@@ -199,6 +215,11 @@ def compute_signal():
 
     ma_a20 = med_a_close.rolling(20).mean()
     ma_cyb30 = cyb_close.rolling(30).mean()
+    ma_gene30 = gene_close.rolling(30).mean()
+    if SECOND_GATE == "gene":
+        gate2_name, gate2_close, gate2_ma = "基因测序>MA30", gene_close, ma_gene30
+    else:
+        gate2_name, gate2_close, gate2_ma = "创业板>MA30", cyb_close, ma_cyb30
 
     last = len(stock) - 1
     gates = {
@@ -207,7 +228,7 @@ def compute_signal():
         "个股_RSI<80": bool(rsi.iloc[last] < 80),
         "个股_+DI>-DI": bool(pdi.iloc[last] > mdi.iloc[last]),
         "医药ETF>MA20": bool(med_a_close.iloc[last] > ma_a20.iloc[last]),
-        "创业板>MA30": bool(cyb_close.iloc[last] > ma_cyb30.iloc[last]),
+        gate2_name: bool(gate2_close.iloc[last] > gate2_ma.iloc[last]),
         "换手率0.8%-10%": bool(0.008 <= to.iloc[last] <= 0.10),
     }
     sig_today = all(gates.values())
@@ -219,7 +240,7 @@ def compute_signal():
              bool(ma3.iloc[last - 1] > ma20.iloc[last - 1]) and
              bool(rsi.iloc[last - 1] < 80) and bool(pdi.iloc[last - 1] > mdi.iloc[last - 1]) and
              bool(med_a_close.iloc[last - 1] > ma_a20.iloc[last - 1]) and
-             bool(cyb_close.iloc[last - 1] > ma_cyb30.iloc[last - 1]) and
+             bool(gate2_close.iloc[last - 1] > gate2_ma.iloc[last - 1]) and
              bool(0.008 <= to.iloc[last - 1] <= 0.10))
     scale_y = min(0.4 / rv20.iloc[last - 1], 1.0) if np.isfinite(rv20.iloc[last - 1]) else 0.0
     pos_today = sig_y * scale_y
@@ -257,6 +278,9 @@ def compute_signal():
             "医疗ETF_MA20": round(float(med_b["close"].rolling(20).mean().iloc[-1]), 3),
             "创业板close": float(cyb["close"].iloc[-1]),
             "创业板MA30": round(float(cyb["close"].rolling(30).mean().iloc[-1]), 3),
+            "基因测序板块close": float(gene["close"].iloc[-1]),
+            "基因测序板块MA30": round(float(gene["close"].rolling(30).mean().iloc[-1]), 3),
+            "第二门控": gate2_name,
             "上证close": float(sh["close"].iloc[-1]),
             "上证MA20": round(float(sh["close"].rolling(20).mean().iloc[-1]), 3),
         },

@@ -24,6 +24,7 @@
 │   ├── sh512010_daily.csv        # 医药 ETF（板块门控）
 │   ├── sh512170_daily.csv        # 医疗 ETF
 │   ├── sz399006_daily.csv        # 创业板指
+│   ├── ths_gene_sequencing_daily.csv  # 基因测序板块指数(同花顺, 2015起, 第二门控备选)
 │   ├── sz399001_daily.csv        # 深证成指
 │   ├── sh000001_daily.csv        # 上证指数
 │   ├── last_signal.json          # 最新信号（含各门控明细）
@@ -96,6 +97,7 @@
 - **滚动 walk-forward 已试，不采用**：10 折×594 点逐年重训，聚合 +50.7%/Calmar 0.30，远劣于固定 D3V 同窗口 +523.3%/Calmar 1.46（IS 按 Calmar 选参偏向保守低仓，OOS 几乎不交易）→ 维持参数先验固定；
 - **成交约束已补**：`--limit-block` 强制一字板不可成交（一字涨停只拦买入、一字跌停只拦卖出），验证与 retrace3% 默认结果完全一致（+529.5%/-14.3%）；停牌日数据源直接省略、T+1 无同日往返天然满足；
 - **试验登记簿已建**：`data/experiments_log.csv` 记录全部历史尝试与新试验，DSR 的 n_trials 可追溯。
+- **板块关联门控已试，维持创业板**（SECTOR-001，详见 [docs/methodology.md](docs/methodology.md) §7）：贝瑞基因与基因测序板块日收益相关性最强（0.62，2024+ 0.68；创业板仅 0.45/0.32），但基因测序门控回测 +375.4%/-16.7% 劣于创业板 +529.5%/-14.3%——板块指数含个股自身属冗余信息，创业板是正交的市场风险过滤器；基因测序数据与代码已入库，`daily_signal.py` 中 `SECOND_GATE` 一行可切换（默认 `cyb`）。
 
 ### 盘中实时决策试点（2026-08-07，详见 [docs/methodology.md](docs/methodology.md) §6）
 
