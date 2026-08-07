@@ -99,7 +99,7 @@
 
 ### 盘中实时决策试点（2026-08-07，详见 [docs/methodology.md](docs/methodology.md) §6）
 
-用 baostock 5 分钟线在 T 日 14:30/14:45 实时计算 D3V 信号并当场买卖（板块门控用 T-1 值）。窗口 2020+ 结果：收益不如次日 retrace（+332% vs +430%），但回撤从 -14.3% 降至 -10.2%、Calmar 2.53 略高——属于"用收益换回撤"的权衡，**未切换为正式执行口径**。若考虑实盘采用，需先做样本外参数验证。
+用 baostock 5 分钟线在 T 日 14:30/14:45 实时计算 D3V 信号并当场买卖（板块门控用 T-1 值）。窗口 2020+ 结果：收益不如次日 retrace（+332% vs +430%），但回撤从 -14.3% 降至 -10.2%、Calmar 2.53 略高——属于"用收益换回撤"的权衡，**未切换为正式执行口径**。另测了无时钟的**规则触发**模式（信号变即成交/T+1 约束）：+210.8%/-23.3%，全面劣于固定时点——盘中早期信号噪音大，T+1 使假信号隔夜扛单；纯规则确认（连续 24 bar）也仅 +239%/Calmar 1.38，仍不采用。
 
 ## 快速开始
 
@@ -131,7 +131,9 @@ python3 code/walk_forward.py data/sz000710_daily_qfq.csv \
   --sector-csv data/sh512010_daily.csv --extra-csv data/sz399006_daily.csv
 
 # 盘中实时决策试点（需 baostock；分钟线自2020-01-02起）
-python3 code/intraday_backtest.py --decision 1430   # 或 1445
+python3 code/intraday_backtest.py --decision 1430      # 固定时点 14:30（或 1445）
+python3 code/intraday_backtest.py --trigger rule        # 规则触发（无时钟，默认即时）
+python3 code/intraday_backtest.py --trigger rule --confirm 24   # 规则+连续24根bar确认
 ```
 
 ## 数据说明
