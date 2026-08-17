@@ -1,14 +1,14 @@
 {
-  "as_of": "2026-08-14",
+  "as_of": "2026-08-17",
   "strategy": "D3V",
-  "last_close": 9.17,
+  "last_close": 9.06,
   "gates": {
     "个股_close>MA3": false,
     "个股_MA3>MA20": true,
     "个股_RSI<80": true,
     "个股_+DI>-DI": true,
-    "医药ETF>MA20": false,
-    "创业板>MA30": true,
+    "医药ETF>MA20": true,
+    "创业板>MA30": false,
     "换手率0.8%-10%": true
   },
   "signal_today": false,
@@ -16,41 +16,41 @@
   "position_today_pct": 0.0,
   "action": "空仓等待",
   "indicators": {
-    "ma3": 9.413,
-    "ma20": 8.581,
-    "rsi": 56.8,
-    "pdi": 31.8,
-    "mdi": 17.3,
-    "turnover_pct": 7.81,
-    "volume_ratio": 1.29,
-    "close_vs_vwap_pct": -0.88,
-    "vol20_annual": 0.641
+    "ma3": 9.28,
+    "ma20": 8.643,
+    "rsi": 55.1,
+    "pdi": 30.1,
+    "mdi": 20.2,
+    "turnover_pct": 5.04,
+    "volume_ratio": 0.82,
+    "close_vs_vwap_pct": 0.55,
+    "vol20_annual": 0.644
   },
   "sector": {
-    "医药ETF_close": 0.403,
-    "医药ETF_MA20": 0.379,
-    "医药ETF_RSI": 67.7,
-    "医疗ETF_close": 0.351,
-    "医疗ETF_MA20": 0.33,
+    "医药ETF_close": 0.401,
+    "医药ETF_MA20": 0.384,
+    "医药ETF_RSI": 63.9,
+    "医疗ETF_close": 0.353,
+    "医疗ETF_MA20": 0.335,
     "创业板close": 3626.296,
     "创业板MA30": 3600.363,
-    "基因测序板块close": 2086.63,
-    "基因测序板块MA30": 1915.885,
+    "基因测序板块close": 2095.038,
+    "基因测序板块MA30": 1920.161,
     "第二门控": "创业板>MA30",
-    "上证close": 3927.176,
-    "上证MA20": 3870.396
+    "上证close": 3982.654,
+    "上证MA20": 3879.714
   },
   "data_latest": {
-    "贝瑞基因": "2026-08-14",
-    "医药ETF": "2026-08-11",
-    "医疗ETF": "2026-08-11",
+    "贝瑞基因": "2026-08-17",
+    "医药ETF": "2026-08-17",
+    "医疗ETF": "2026-08-17",
     "创业板": "2026-08-14",
-    "上证": "2026-08-14"
+    "上证": "2026-08-17"
   },
   "data_stale": {
-    "医药ETF": true,
-    "医疗ETF": true,
-    "创业板": false,
+    "医药ETF": false,
+    "医疗ETF": false,
+    "创业板": true,
     "上证": false
   },
   "note": "门控全部按个股交易日对齐，数据源缺最新日时该门控强制关闭(保守)；仓位为百分比目标，实盘按次日开盘成交、大跳空≥3%等回撤。历史表现不代表未来。"
