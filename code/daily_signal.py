@@ -127,7 +127,9 @@ def update_instrument(instr):
     else:
         old = None
         start = "20150101"
-    end = datetime.now().strftime("%Y%m%d")
+    # 严格时序：日线只取已收盘交易日（16:00前不含当日，防盘中未收盘K线污染历史数据）
+    end = datetime.now().strftime("%Y%m%d") if datetime.now().hour >= 16 \
+        else (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
     df = _try(lambda: fetch_em(instr, start, end), f"{instr['name']} 东财")
     src = "东财"
     if df is None:
