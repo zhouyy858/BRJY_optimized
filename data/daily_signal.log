@@ -126,3 +126,15 @@
 [2026-08-28 20:59:40] [warn] 医疗ETF 本次未更新，沿用旧数据
 [2026-08-28 20:59:53] [ok] 基因测序板块 更新自东财源，共2833行，最新 2026-08-28
 [2026-08-28 20:59:53] 数据更新完成: 7/7 成功
+[2026-08-31 17:29:13] [warn] 贝瑞基因 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-08-31 17:29:14] [ok] 贝瑞基因 更新自新浪源，共6720行，最新 2026-08-31
+[2026-08-31 17:29:35] [warn] 上证指数 东财 连续3次失败: HTTPSConnectionPool(host='80.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b%3AMK0010%2Cm%3A1%2Bt%3A1%2Cm%3A0+t%3A5%2Cm%3A1%2Bs%3A3%2Cm%3A0%2Bt%3A5%2Cm%3A2&fields=f3%2Cf12%2Cf13 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+[2026-08-31 17:29:36] [ok] 上证指数 更新自新浪源，共8714行，最新 2026-08-28
+[2026-08-31 17:29:57] [warn] 深证成指 东财 连续3次失败: HTTPSConnectionPool(host='80.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b%3AMK0010%2Cm%3A1%2Bt%3A1%2Cm%3A0+t%3A5%2Cm%3A1%2Bs%3A3%2Cm%3A0%2Bt%3A5%2Cm%3A2&fields=f3%2Cf12%2Cf13 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+[2026-08-31 17:29:57] [ok] 深证成指 更新自新浪源，共8622行，最新 2026-08-28
+[2026-08-31 17:30:19] [warn] 创业板指 东财 连续3次失败: HTTPSConnectionPool(host='80.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/clist/get?pn=1&pz=100&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b%3AMK0010%2Cm%3A1%2Bt%3A1%2Cm%3A0+t%3A5%2Cm%3A1%2Bs%3A3%2Cm%3A0%2Bt%3A5%2Cm%3A2&fields=f3%2Cf12%2Cf13 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+[2026-08-31 17:30:19] [ok] 创业板指 更新自新浪源，共3946行，最新 2026-08-28
+[2026-08-31 17:30:19] [ok] 医药ETF 更新自东财源，共2832行，最新 2026-08-31
+[2026-08-31 17:30:19] [ok] 医疗ETF 更新自东财源，共1750行，最新 2026-08-31
+[2026-08-31 17:30:21] [ok] 基因测序板块 更新自东财源，共2833行，最新 2026-08-28
+[2026-08-31 17:30:21] 数据更新完成: 7/7 成功
