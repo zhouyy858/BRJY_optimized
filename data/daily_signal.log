@@ -431,3 +431,15 @@
 [2026-09-17 14:24:57] [warn] 医疗ETF 本次未更新，沿用旧数据
 [2026-09-17 14:25:16] [ok] 基因测序板块 更新自东财源，共2846行，最新 2026-09-16
 [2026-09-17 14:25:16] 数据更新完成: 7/7 成功
+[2026-09-18 13:42:59] [warn] 贝瑞基因 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-09-18 13:43:02] [ok] 贝瑞基因 更新自新浪源，共6733行，最新 2026-09-17
+[2026-09-18 13:43:45] [warn] 上证指数 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-09-18 13:43:46] [ok] 上证指数 更新自新浪源，共8729行，最新 2026-09-18
+[2026-09-18 13:44:14] [warn] 深证成指 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-09-18 13:44:15] [ok] 深证成指 更新自新浪源，共8637行，最新 2026-09-18
+[2026-09-18 13:44:41] [warn] 创业板指 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-09-18 13:44:42] [ok] 创业板指 更新自新浪源，共3961行，最新 2026-09-18
+[2026-09-18 13:44:43] [ok] 医药ETF 更新自东财源，共2845行，最新 2026-09-17
+[2026-09-18 13:44:43] [ok] 医疗ETF 更新自东财源，共1763行，最新 2026-09-17
+[2026-09-18 13:44:59] [ok] 基因测序板块 更新自东财源，共2847行，最新 2026-09-17
+[2026-09-18 13:44:59] 数据更新完成: 7/7 成功
