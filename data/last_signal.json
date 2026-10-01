@@ -9,7 +9,7 @@
     "个股_+DI>-DI": true,
     "医药ETF>MA20": true,
     "创业板>MA30": false,
-    "换手率0.8%-10%": true
+    "换手率0.8%-10%": false
   },
   "signal_today": false,
   "target_position_tomorrow_pct": 0.0,
@@ -21,9 +21,9 @@
     "rsi": 65.0,
     "pdi": 36.2,
     "mdi": 10.4,
-    "turnover_pct": 7.52,
-    "volume_ratio": 1.38,
-    "close_vs_vwap_pct": 2.15,
+    "turnover_pct": 752.0,
+    "volume_ratio": 0.02,
+    "close_vs_vwap_pct": -98.98,
     "vol20_annual": 0.673
   },
   "sector": {
