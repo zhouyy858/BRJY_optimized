@@ -940,3 +940,24 @@
 [2026-10-26 16:16:22] [warn] 医疗ETF 本次未更新，沿用旧数据
 [2026-10-26 16:16:38] [ok] 基因测序板块 更新自东财源，共2868行，最新 2026-10-26
 [2026-10-26 16:16:38] 数据更新完成: 7/7 成功
+[2026-10-27 15:28:19] [ok] 贝瑞基因 更新自东财源，共6754行，最新 2026-10-26
+[2026-10-27 15:28:53] [warn] 上证指数 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-10-27 15:28:54] [ok] 上证指数 更新自新浪源，共8750行，最新 2026-10-27
+[2026-10-27 15:29:30] [warn] 深证成指 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-10-27 15:29:31] [ok] 深证成指 更新自新浪源，共8658行，最新 2026-10-27
+[2026-10-27 15:30:06] [warn] 创业板指 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-10-27 15:30:06] [ok] 创业板指 更新自新浪源，共3982行，最新 2026-10-27
+[2026-10-27 15:30:18] [warn] 医药ETF 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-10-27 15:30:18] [warn] 医药ETF 新浪ETF数据为不复权口径，拒绝换源回退(仅用东财qfq)
+[2026-10-27 15:30:20] [warn] 医药ETF 新浪ETF数据为不复权口径，拒绝换源回退(仅用东财qfq)
+[2026-10-27 15:30:24] [warn] 医药ETF 新浪ETF数据为不复权口径，拒绝换源回退(仅用东财qfq)
+[2026-10-27 15:30:24] [warn] 医药ETF 新浪 连续3次失败: None
+[2026-10-27 15:30:24] [warn] 医药ETF 本次未更新，沿用旧数据
+[2026-10-27 15:30:43] [warn] 医疗ETF 东财 连续3次失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2026-10-27 15:30:43] [warn] 医疗ETF 新浪ETF数据为不复权口径，拒绝换源回退(仅用东财qfq)
+[2026-10-27 15:30:45] [warn] 医疗ETF 新浪ETF数据为不复权口径，拒绝换源回退(仅用东财qfq)
+[2026-10-27 15:30:49] [warn] 医疗ETF 新浪ETF数据为不复权口径，拒绝换源回退(仅用东财qfq)
+[2026-10-27 15:30:49] [warn] 医疗ETF 新浪 连续3次失败: None
+[2026-10-27 15:30:49] [warn] 医疗ETF 本次未更新，沿用旧数据
+[2026-10-27 15:31:06] [ok] 基因测序板块 更新自东财源，共2868行，最新 2026-10-26
+[2026-10-27 15:31:06] 数据更新完成: 7/7 成功
