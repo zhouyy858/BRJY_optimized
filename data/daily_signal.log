@@ -1264,3 +1264,19 @@
 [2026-11-20 17:56:11] [ok] 医疗ETF 更新自东财源，共1803行，最新 2026-11-20
 [2026-11-20 17:56:33] [ok] 基因测序板块 更新自东财源，共2887行，最新 2026-11-20
 [2026-11-20 17:56:33] 数据更新完成: 7/7 成功
+[2026-11-23 21:35:42] [warn] 贝瑞基因 东财 连续3次失败: stock_zh_a_hist 已在 1.20.46 更名为 stock_zh_a_hist_em，请改用 ak.stock_zh_a_hist_em；参数与返回的列也可能有调整，用 ak.interface_info("stock_zh_a_hist_em") 查看。完整对照见 https://akshare.akfamily.xyz/changelog.html#changelog-rename
+[2026-11-23 21:35:48] [warn] 贝瑞基因 新浪 连续3次失败: stock_zh_a_daily 已在 1.20.46 更名为 stock_zh_a_hist_sina，请改用 ak.stock_zh_a_hist_sina；参数与返回的列也可能有调整，用 ak.interface_info("stock_zh_a_hist_sina") 查看。完整对照见 https://akshare.akfamily.xyz/changelog.html#changelog-rename
+[2026-11-23 21:35:48] [warn] 贝瑞基因 本次未更新，沿用旧数据
+[2026-11-23 21:35:54] [warn] 上证指数 东财 连续3次失败: index_zh_a_hist 已在 1.20.44 更名为 index_zh_hist_em，请改用 ak.index_zh_hist_em；参数与返回的列也可能有调整，用 ak.interface_info("index_zh_hist_em") 查看。完整对照见 https://akshare.akfamily.xyz/changelog.html#changelog-rename
+[2026-11-23 21:36:00] [warn] 上证指数 新浪 连续3次失败: stock_zh_index_daily 已在 1.20.44 更名为 index_zh_daily_sina，请改用 ak.index_zh_daily_sina；参数与返回的列也可能有调整，用 ak.interface_info("index_zh_daily_sina") 查看。完整对照见 https://akshare.akfamily.xyz/changelog.html#changelog-rename
+[2026-11-23 21:36:00] [warn] 上证指数 本次未更新，沿用旧数据
+[2026-11-23 21:36:07] [warn] 深证成指 东财 连续3次失败: index_zh_a_hist 已在 1.20.44 更名为 index_zh_hist_em，请改用 ak.index_zh_hist_em；参数与返回的列也可能有调整，用 ak.interface_info("index_zh_hist_em") 查看。完整对照见 https://akshare.akfamily.xyz/changelog.html#changelog-rename
+[2026-11-23 21:36:13] [warn] 深证成指 新浪 连续3次失败: stock_zh_index_daily 已在 1.20.44 更名为 index_zh_daily_sina，请改用 ak.index_zh_daily_sina；参数与返回的列也可能有调整，用 ak.interface_info("index_zh_daily_sina") 查看。完整对照见 https://akshare.akfamily.xyz/changelog.html#changelog-rename
+[2026-11-23 21:36:13] [warn] 深证成指 本次未更新，沿用旧数据
+[2026-11-23 21:36:19] [warn] 创业板指 东财 连续3次失败: index_zh_a_hist 已在 1.20.44 更名为 index_zh_hist_em，请改用 ak.index_zh_hist_em；参数与返回的列也可能有调整，用 ak.interface_info("index_zh_hist_em") 查看。完整对照见 https://akshare.akfamily.xyz/changelog.html#changelog-rename
+[2026-11-23 21:36:25] [warn] 创业板指 新浪 连续3次失败: stock_zh_index_daily 已在 1.20.44 更名为 index_zh_daily_sina，请改用 ak.index_zh_daily_sina；参数与返回的列也可能有调整，用 ak.interface_info("index_zh_daily_sina") 查看。完整对照见 https://akshare.akfamily.xyz/changelog.html#changelog-rename
+[2026-11-23 21:36:25] [warn] 创业板指 本次未更新，沿用旧数据
+[2026-11-23 21:36:25] [ok] 医药ETF 更新自东财源，共2886行，最新 2026-11-23
+[2026-11-23 21:36:26] [ok] 医疗ETF 更新自东财源，共1804行，最新 2026-11-23
+[2026-11-23 21:36:53] [ok] 基因测序板块 更新自东财源，共2888行，最新 2026-11-23
+[2026-11-23 21:36:53] 数据更新完成: 7/7 成功
